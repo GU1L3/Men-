@@ -1,0 +1,61 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <LiquidCrystal_I2C.h> // Debe descargar la Libreria que controla el I2C
+#include<Wire.h>
+
+//#define Pin 2 //Se declara el pin donde se conectará la DATA
+ 
+OneWire ourWire1(2); //Se establece el pin declarado como bus para la comunicación OneWire
+OneWire ourWire2(4);
+
+DallasTemperature sensors1(&ourWire1); //Se instancia la librería DallasTemperature
+DallasTemperature sensors2(&ourWire2);
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+ 
+void setup() {
+delay(1000);
+Serial.begin(9600);
+
+lcd.init();
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(4,1);
+  lcd.print("iniciando..."); 
+  
+  sensors1.begin(); //Se inician los sensores
+  sensors2.begin();
+  
+delay(2500);
+lcd.clear(); 
+}
+ 
+void loop() {
+
+sensors1.requestTemperatures(); //Prepara el sensor para la lectura
+sensors2.requestTemperatures();  
+
+Serial.print(sensors1.getTempCByIndex(0)); //Se lee e imprime la temperatura en grados Celsius
+Serial.println(" grados Celcius");
+
+lcd.setCursor(0,1);
+lcd.print("Temperatura:");
+lcd.setCursor(12,1);
+lcd.print(sensors1.getTempCByIndex(0),1);
+lcd.setCursor(18,1);
+lcd.print((char)223);
+lcd.setCursor(19,1);
+lcd.print("C");
+
+lcd.setCursor(0,2);
+lcd.print("Temperatura:");
+lcd.setCursor(12,2);
+lcd.print(sensors2.getTempCByIndex(0),1);
+lcd.setCursor(18,2);
+lcd.print((char)223);
+lcd.setCursor(19,2);
+lcd.print("C");
+
+delay(1000); //Se provoca un lapso de 1 segundo antes de la próxima lectura
+ 
+}
